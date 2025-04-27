@@ -3,7 +3,8 @@ import Map, { Source, Layer, ViewState, MapRef } from '@vis.gl/react-maplibre';
 import { useGeojsonStore } from '../store/geojsonStore';
 import { getGeojsonBounds } from '../utils/geojsonBounds';
 
-const MAP_STYLE = 'https://demotiles.maplibre.org/style.json';
+// MapTiler Streets スタイル
+const MAP_STYLE = `https://api.maptiler.com/maps/streets/style.json?key=${import.meta.env.VITE_MAPTILER_KEY}`;
 const INITIAL_VIEW_STATE: Partial<ViewState> = {
   longitude: 139.767,
   latitude: 35.681,
