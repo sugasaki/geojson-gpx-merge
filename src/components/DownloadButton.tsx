@@ -1,29 +1,50 @@
 import React from 'react';
 import { useGeojsonStore } from '../store/geojsonStore';
+import { geojsonToGpx } from '../utils/geojsonToGpx';
 
 export default function DownloadButton() {
   const mergedGeojson = useGeojsonStore((s) => s.mergedGeojson);
 
-  const handleDownload = () => {
+  const handleDownload = (ext: 'geojson' | 'gpx') => {
     if (!mergedGeojson) return;
-    const blob = new Blob([
-      JSON.stringify({ type: 'FeatureCollection', features: [mergedGeojson] }, null, 2),
-    ], { type: 'application/geo+json' });
+    let blob: Blob, filename: string;
+    if (ext === 'geojson') {
+      blob = new Blob([
+        JSON.stringify({
+          type: 'FeatureCollection',
+          features: [mergedGeojson],
+        }, null, 2)
+      ], { type: 'application/geo+json' });
+      filename = 'merged.geojson';
+    } else {
+      const gpx = geojsonToGpx(mergedGeojson);
+      blob = new Blob([gpx], { type: 'application/gpx+xml' });
+      filename = 'merged.gpx';
+    }
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'merged.geojson';
+    a.download = filename;
     a.click();
-    URL.revokeObjectURL(url);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
 
   return (
-    <button
-      className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-300"
-      onClick={handleDownload}
-      disabled={!mergedGeojson}
-    >
-      結合GeoJSONをダウンロード
-    </button>
+    <div className="flex gap-2">
+      <button
+        className="px-4 py-2 bg-blue-600 text-white rounded shadow disabled:opacity-50"
+        onClick={() => handleDownload('geojson')}
+        disabled={!mergedGeojson}
+      >
+        GeoJSONダウンロード
+      </button>
+      <button
+        className="px-4 py-2 bg-green-600 text-white rounded shadow disabled:opacity-50"
+        onClick={() => handleDownload('gpx')}
+        disabled={!mergedGeojson}
+      >
+        GPXダウンロード
+      </button>
+    </div>
   );
 }
