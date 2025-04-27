@@ -1,4 +1,4 @@
-# GeoJSON File Merging Tool (gpx-merge)
+# GeoJSON Merge Tool
 
 GeoJSONファイルを結合し、地図上で可視化＆高度グラフ連携できるReactアプリです。
 
