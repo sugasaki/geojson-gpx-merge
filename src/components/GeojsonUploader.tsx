@@ -76,6 +76,12 @@ export default function GeojsonUploader() {
     fileInputRef.current?.click();
   };
 
+  // すべて削除（確認なし）
+  const clearAll = () => {
+    setFileItems([]);
+    setMergedGeojson(null);
+  };
+
   // 並び替え（DnD）
   const onDragEnd = (result: DropResult) => {
     if (!result.destination) return;
@@ -108,6 +114,16 @@ export default function GeojsonUploader() {
           className="hidden"
           onChange={handleFiles}
         />
+      </div>
+      {/* すべて削除ボタン */}
+      <div className="flex justify-end mb-2">
+        <button
+          className="px-3 py-1 text-xs bg-red-500 text-white rounded shadow disabled:opacity-50"
+          onClick={clearAll}
+          disabled={fileItems.length === 0}
+        >
+          すべて削除
+        </button>
       </div>
       {/* ファイルリストとドラッグ並び替えUI */}
       {fileItems.length > 0 && (
