@@ -1,32 +1,13 @@
 import React from 'react';
 import { useGeojsonStore } from '../store/geojsonStore';
-import { geojsonToGpx } from '../utils/geojsonToGpx';
+import { downloadGeoData } from '../utils/download';
 
 export default function DownloadButton() {
   const mergedGeojson = useGeojsonStore((s) => s.mergedGeojson);
 
   const handleDownload = (ext: 'geojson' | 'gpx') => {
     if (!mergedGeojson) return;
-    let blob: Blob, filename: string;
-    if (ext === 'geojson') {
-      blob = new Blob([
-        JSON.stringify({
-          type: 'FeatureCollection',
-          features: [mergedGeojson],
-        }, null, 2)
-      ], { type: 'application/geo+json' });
-      filename = 'merged.geojson';
-    } else {
-      const gpx = geojsonToGpx(mergedGeojson);
-      blob = new Blob([gpx], { type: 'application/gpx+xml' });
-      filename = 'merged.gpx';
-    }
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    downloadGeoData(mergedGeojson, ext);
   };
 
   return (
