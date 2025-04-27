@@ -1,0 +1,139 @@
+import React, { useRef, useState } from 'react';
+import { useGeojsonStore, GeoJSON } from '../store/geojsonStore';
+import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
+import { mergeGeojsons } from '../utils/geojsonMerge';
+
+type FileItem = {
+  file: File;
+  name: string;
+  geojson: GeoJSON;
+};
+
+export default function GeojsonUploader() {
+  const setMergedGeojson = useGeojsonStore((s) => s.setMergedGeojson);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [dragActive, setDragActive] = useState(false);
+  const [fileItems, setFileItems] = useState<FileItem[]>([]);
+
+  // ファイル追加
+  const handleFilesProcess = async (files: FileList | null) => {
+    if (!files) return;
+    const newItems: FileItem[] = [];
+    for (let i = 0; i < files.length; i++) {
+      const text = await files[i].text();
+      try {
+        const json = JSON.parse(text);
+        if (json.type === 'FeatureCollection') {
+          newItems.push({ file: files[i], name: files[i].name, geojson: json });
+        }
+      } catch {}
+    }
+    const mergedList = [...fileItems, ...newItems];
+    setFileItems(mergedList);
+    setMergedGeojson(mergeGeojsons(mergedList.map(f => f.geojson)));
+  };
+
+  // ファイル削除
+  const removeItem = (idx: number) => {
+    const updated = fileItems.filter((_, i) => i !== idx);
+    setFileItems(updated);
+    setMergedGeojson(mergeGeojsons(updated.map(f => f.geojson)));
+  };
+
+  // input change
+  const handleFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleFilesProcess(e.target.files);
+  };
+
+  // ドラッグ＆ドロップイベント（アップロード用）
+  const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === 'dragenter' || e.type === 'dragover') {
+      setDragActive(true);
+    } else if (e.type === 'dragleave') {
+      setDragActive(false);
+    }
+  };
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      handleFilesProcess(e.dataTransfer.files);
+    }
+  };
+
+  const handleAreaClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  // 並び替え（DnD）
+  const onDragEnd = (result: DropResult) => {
+    if (!result.destination) return;
+    const updated = Array.from(fileItems);
+    const [removed] = updated.splice(result.source.index, 1);
+    updated.splice(result.destination.index, 0, removed);
+    setFileItems(updated);
+    setMergedGeojson(mergeGeojsons(updated.map(f => f.geojson)));
+  };
+
+  return (
+    <div className="w-full max-w-md">
+      <div
+        className={`flex flex-col items-center gap-2 border-2 border-dashed rounded-md p-6 cursor-pointer transition-colors ${dragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300 bg-white'}`}
+        onClick={handleAreaClick}
+        onDragEnter={handleDrag}
+        onDragOver={handleDrag}
+        onDragLeave={handleDrag}
+        onDrop={handleDrop}
+      >
+        <input
+          type="file"
+          accept=".geojson,application/geo+json,application/json"
+          multiple
+          className="hidden"
+          ref={fileInputRef}
+          onChange={handleFiles}
+        />
+        <span className="text-base text-gray-700">ファイルを選択 または ここにドラッグ＆ドロップ</span>
+        <span className="text-xs text-gray-500">複数のGeoJSONファイルを指定できます</span>
+      </div>
+      {/* ファイルリストとドラッグ並び替えUI */}
+      {fileItems.length > 0 && (
+        <DragDropContext onDragEnd={onDragEnd}>
+          <Droppable droppableId="geojson-list">
+            {(provided) => (
+              <ul
+                className="mt-4 space-y-2"
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+              >
+                {fileItems.map((item, idx) => (
+                  <Draggable key={item.name + idx} draggableId={item.name + idx} index={idx}>
+                    {(prov, snapshot) => (
+                      <li
+                        ref={prov.innerRef}
+                        {...prov.draggableProps}
+                        {...prov.dragHandleProps}
+                        className={`flex items-center gap-2 bg-gray-100 px-3 py-2 rounded shadow-sm border ${snapshot.isDragging ? 'border-blue-400' : 'border-transparent'}`}
+                      >
+                        <span className="flex-1 truncate cursor-move">{idx + 1}. {item.name}</span>
+                        <button
+                          className="px-2 py-1 text-xs bg-red-400 text-white rounded"
+                          onClick={() => removeItem(idx)}
+                          title="削除"
+                        >✕</button>
+                      </li>
+                    )}
+                  </Draggable>
+                ))}
+                {provided.placeholder}
+              </ul>
+            )}
+          </Droppable>
+        </DragDropContext>
+      )}
+    </div>
+  );
+}
