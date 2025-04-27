@@ -10,7 +10,7 @@ type ChartProps = {
 
 export default function Chart({ feature, onHoverIndex }: ChartProps) {
   // 標高データ抽出
-  let data: { idx: number; alt: number; }[] = [];
+  let data: { idx: number; alt: number }[] = [];
   if (feature && feature.geometry.type === 'LineString') {
     data = feature.geometry.coordinates.map((c: any, i: number) => ({
       idx: i,
@@ -24,11 +24,11 @@ export default function Chart({ feature, onHoverIndex }: ChartProps) {
   }
 
   return (
-    <div className="w-full max-w-2xl h-64 bg-white rounded shadow p-4">
+    <div className="w-full h-64 bg-white rounded shadow p-4">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
           data={data}
-          onMouseMove={state => {
+          onMouseMove={(state) => {
             if (onHoverIndex) {
               if (state && state.activeTooltipIndex != null) {
                 onHoverIndex(state.activeTooltipIndex);

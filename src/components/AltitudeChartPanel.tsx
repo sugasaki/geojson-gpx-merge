@@ -1,4 +1,3 @@
-import React from 'react';
 import Chart from './Chart';
 import { GeoJSONFeature } from '../store/geojsonStore';
 
@@ -12,13 +11,7 @@ export default function AltitudeChartPanel({ feature, onHoverIndex }: AltitudeCh
     <div className="bg-white shadow-lg p-2 md:p-4 border-t w-full max-w-none sm:max-w-3xl md:max-w-4xl lg:max-w-6xl xl:max-w-7xl mx-auto">
       <div className="text-base md:text-lg font-semibold text-gray-700 mb-2 flex items-center gap-2">
         {/* チャートアイコン（折れ線グラフ） */}
-        <svg
-          className="w-5 h-5 text-blue-400"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          viewBox="0 0 24 24"
-        >
+        <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
           <polyline
             points="4 17 9 11 13 15 20 7"
             fill="none"
