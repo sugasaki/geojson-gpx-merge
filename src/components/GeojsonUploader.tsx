@@ -9,6 +9,14 @@ type FileItem = {
   geojson: GeoJSON;
 };
 
+// アップロード用アイコンSVG
+const UploadIcon = () => (
+  <svg className="w-12 h-12 text-blue-400 mx-auto mb-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 48 48">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M24 34V14m0 0l-8 8m8-8l8 8" />
+    <rect x="8" y="34" width="32" height="6" rx="3" fill="currentColor" opacity=".2" />
+  </svg>
+);
+
 export default function GeojsonUploader() {
   const setMergedGeojson = useGeojsonStore((s) => s.setMergedGeojson);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -81,23 +89,25 @@ export default function GeojsonUploader() {
   return (
     <div className="w-full max-w-md">
       <div
-        className={`flex flex-col items-center gap-2 border-2 border-dashed rounded-md p-6 cursor-pointer transition-colors ${dragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300 bg-white'}`}
+        className={`border-2 border-dashed rounded-lg transition-all duration-200 ${dragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300 bg-gray-100'} cursor-pointer mb-4 flex flex-col items-center justify-center min-h-[140px] md:min-h-[180px] px-4 py-8`}
         onClick={handleAreaClick}
         onDragEnter={handleDrag}
         onDragOver={handleDrag}
         onDragLeave={handleDrag}
         onDrop={handleDrop}
+        style={{ userSelect: 'none' }}
       >
+        <UploadIcon />
+        <div className="text-lg font-semibold text-gray-700 mb-1">ファイルをここにドラッグ＆ドロップ</div>
+        <div className="text-sm text-gray-500">またはクリックして選択</div>
         <input
+          ref={fileInputRef}
           type="file"
           accept=".geojson,application/geo+json,application/json"
           multiple
           className="hidden"
-          ref={fileInputRef}
           onChange={handleFiles}
         />
-        <span className="text-base text-gray-700">ファイルを選択 または ここにドラッグ＆ドロップ</span>
-        <span className="text-xs text-gray-500">複数のGeoJSONファイルを指定できます</span>
       </div>
       {/* ファイルリストとドラッグ並び替えUI */}
       {fileItems.length > 0 && (

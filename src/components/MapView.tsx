@@ -95,7 +95,10 @@ export default function MapView({ hoveredIndex }: MapViewProps) {
   }, [mergedGeojson, hoveredIndex]);
 
   return (
-    <div className="w-full max-w-2xl h-96 rounded shadow overflow-hidden">
+    <div
+      className="w-full h-[40vh] sm:h-[60vh] md:h-[70vh] lg:h-[80vh] xl:h-[85vh] max-w-full rounded shadow overflow-hidden"
+      style={{ minHeight: 240 }}
+    >
       <Map
         ref={mapRef}
         mapStyle={MAP_STYLE}
