@@ -11,7 +11,7 @@ export default function ResizableMapAndChart({
   setHoveredIndex: (idx: number | null) => void;
 }) {
   const mergedGeojson = useGeojsonStore((s) => s.mergedGeojson);
-  const [mapHeightRatio, setMapHeightRatio] = useState(0.7); // map:graph = 7:3 (default)
+  const [mapHeightRatio, setMapHeightRatio] = useState(0.8); // map:graph = 8:2 (default: graph最小)
   const [dragging, setDragging] = useState(false);
 
   const handleDrag = (e: React.MouseEvent<HTMLDivElement>) => {
