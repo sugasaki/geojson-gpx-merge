@@ -1,6 +1,6 @@
 import React from 'react';
-import { useGeojsonStore } from '../store/geojsonStore';
-import { downloadGeoData } from '../utils/download';
+import { useGeojsonStore } from '@/store/geojsonStore';
+import { downloadGeoData } from '@/utils/download';
 
 export default function DownloadButton() {
   const mergedGeojson = useGeojsonStore((s) => s.mergedGeojson);

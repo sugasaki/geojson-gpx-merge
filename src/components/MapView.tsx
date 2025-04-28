@@ -1,7 +1,7 @@
 import React, { useMemo, useRef, useEffect } from 'react';
 import Map, { Source, Layer, ViewState, MapRef } from '@vis.gl/react-maplibre';
-import { useGeojsonStore } from '../store/geojsonStore';
-import { getGeojsonBounds } from '../utils/geojsonBounds';
+import { useGeojsonStore } from '@/store/geojsonStore';
+import { getGeojsonBounds } from '@/utils/geojsonBounds';
 
 // MapTiler Streets スタイル
 const MAP_STYLE = `https://api.maptiler.com/maps/streets/style.json?key=${import.meta.env.VITE_MAPTILER_KEY}`;

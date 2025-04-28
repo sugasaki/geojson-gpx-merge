@@ -1,5 +1,5 @@
-import Chart from './Chart';
-import { GeoJSONFeature } from '../store/geojsonStore';
+import Chart from '@/components/Chart';
+import { GeoJSONFeature } from '@/store/geojsonStore';
 
 interface AltitudeChartPanelProps {
   feature: GeoJSONFeature | null;

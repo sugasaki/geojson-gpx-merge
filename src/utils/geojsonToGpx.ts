@@ -1,5 +1,5 @@
 // GeoJSON(LineString/MultiLineString) → GPX文字列変換ユーティリティ
-import { GeoJSONFeature } from '../store/geojsonStore';
+import { GeoJSONFeature } from '@/store/geojsonStore';
 
 export function geojsonToGpx(feature: GeoJSONFeature): string {
   let segments: number[][][] = [];

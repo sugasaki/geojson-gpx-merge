@@ -1,8 +1,8 @@
 import React, { useRef, useState } from 'react';
-import { useGeojsonStore, GeoJSON } from '../store/geojsonStore';
+import { useGeojsonStore, GeoJSON } from '@/store/geojsonStore';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
-import { mergeGeojsons } from '../utils/geojsonMerge';
-import { fileToGeojson } from '../utils/fileToGeojson';
+import { mergeGeojsons } from '@/utils/geojsonMerge';
+import { fileToGeojson } from '@/utils/fileToGeojson';
 
 type FileItem = {
   file: File;

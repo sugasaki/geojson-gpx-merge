@@ -1,5 +1,5 @@
-import { GeoJSONFeature } from '../store/geojsonStore';
-import { geojsonToGpx } from './geojsonToGpx';
+import { GeoJSONFeature } from '@/store/geojsonStore';
+import { geojsonToGpx } from '@/utils/geojsonToGpx';
 
 export function downloadGeoData(feature: GeoJSONFeature, ext: 'geojson' | 'gpx') {
   let blob: Blob, filename: string;

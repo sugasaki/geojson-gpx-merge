@@ -1,6 +1,6 @@
 import React from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import { GeoJSONFeature } from '../store/geojsonStore';
+import { GeoJSONFeature } from '@/store/geojsonStore';
 
 function haversine(lat1: number, lon1: number, lat2: number, lon2: number): number {
   const R = 6371000; // 地球半径[m]

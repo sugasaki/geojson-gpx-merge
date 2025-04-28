@@ -1,4 +1,4 @@
-import { GeoJSON, GeoJSONFeature } from '../store/geojsonStore';
+import { GeoJSON, GeoJSONFeature } from '@/store/geojsonStore';
 
 /**
  * 複数のGeoJSON FeatureCollectionを1つのFeatureに結合

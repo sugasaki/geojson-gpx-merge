@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import MapView from './MapView';
-import AltitudeChartPanel from './AltitudeChartPanel';
-import { useGeojsonStore } from '../store/geojsonStore';
+import MapView from '@/components/MapView';
+import AltitudeChartPanel from '@/components/AltitudeChartPanel';
+import { useGeojsonStore } from '@/store/geojsonStore';
 
 export default function ResizableMapAndChart({
   hoveredIndex,

@@ -1,4 +1,4 @@
-import { gpxToGeojson } from './gpxToGeojson';
+import { gpxToGeojson } from '@/utils/gpxToGeojson';
 import { FeatureCollection } from 'geojson';
 
 export async function fileToGeojson(file: File): Promise<FeatureCollection | null> {

@@ -1,4 +1,4 @@
-import { GeoJSONFeature } from '../store/geojsonStore';
+import { GeoJSONFeature } from '@/store/geojsonStore';
 
 // GeoJSON Featureのboundsを[minLng, minLat, maxLng, maxLat]で返す
 export function getGeojsonBounds(feature: GeoJSONFeature): [number, number, number, number] {
