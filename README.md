@@ -1,10 +1,10 @@
-# GeoJSON Merge Tool
+# geojson-gpx-merge
 
-GeoJSONファイルを結合し、地図上で可視化＆高度グラフ連携できるReactアプリです。
+GeoJSON/GPXファイルを結合し、地図上で可視化＆高度グラフ連携できるReactアプリです。
 
 ## 主な機能
 
-- 複数のGeoJSONファイル（LineString/Polygon等）をアップロード＆結合
+- 複数のGeoJSONおよびGPXファイル（LineString/Polygon/トラック等）をアップロード＆結合
 - ファイル順をドラッグ＆ドロップで変更可能
 - 結合結果をMapTiler地図上に表示（APIキー対応）
 - 結合GeoJSONの高度（Z値）をグラフ化
