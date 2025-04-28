@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@hello-pangea/dnd": "^18.0.1",
+    "@tmcw/togeojson": "^7.1.1",
     "@vis.gl/react-maplibre": "^8.0.4",
     "maplibre-gl": "^3.6.1",
     "react": "^18.2.0",

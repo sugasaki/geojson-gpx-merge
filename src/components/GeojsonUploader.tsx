@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { useGeojsonStore, GeoJSON } from '../store/geojsonStore';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { mergeGeojsons } from '../utils/geojsonMerge';
+import { fileToGeojson } from '../utils/fileToGeojson';
 
 type FileItem = {
   file: File;
@@ -28,13 +29,13 @@ export default function GeojsonUploader() {
     if (!files) return;
     const newItems: FileItem[] = [];
     for (let i = 0; i < files.length; i++) {
-      const text = await files[i].text();
-      try {
-        const json = JSON.parse(text);
-        if (json.type === 'FeatureCollection') {
-          newItems.push({ file: files[i], name: files[i].name, geojson: json });
-        }
-      } catch {}
+      const file = files[i];
+      const geojson = await fileToGeojson(file);
+      if (geojson) {
+        newItems.push({ file, name: file.name, geojson });
+      } else if (file.name.toLowerCase().endsWith('.gpx')) {
+        alert('GPXファイルの読み込みに失敗しました: ' + file.name);
+      }
     }
     const mergedList = [...fileItems, ...newItems];
     setFileItems(mergedList);
@@ -109,7 +110,7 @@ export default function GeojsonUploader() {
         <input
           ref={fileInputRef}
           type="file"
-          accept=".geojson,application/geo+json,application/json"
+          accept=".geojson,.gpx,application/geo+json,application/json,application/gpx+xml"
           multiple
           className="hidden"
           onChange={handleFiles}
