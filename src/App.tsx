@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import GeojsonUploader from './components/GeojsonUploader';
-import DownloadButton from './components/DownloadButton';
-import ResizableMapAndChart from './components/ResizableMapAndChart';
-import { useGeojsonStore } from './store/geojsonStore';
+import { useState } from 'react';
+import GeojsonUploader from '@/components/GeojsonUploader';
+import DownloadButton from '@/components/DownloadButton';
+import ResizableMapAndChart from '@/components/ResizableMapAndChart';
+import GithubLink from '@/components/GithubLink';
+import { useGeojsonStore } from '@/store/geojsonStore';
 
 export default function App() {
   const mergedGeojson = useGeojsonStore((s) => s.mergedGeojson);
@@ -20,6 +21,7 @@ export default function App() {
       <main className="flex-1 h-full flex flex-col">
         <ResizableMapAndChart hoveredIndex={hoveredIndex} setHoveredIndex={setHoveredIndex} />
       </main>
+      <GithubLink />
     </div>
   );
 }
