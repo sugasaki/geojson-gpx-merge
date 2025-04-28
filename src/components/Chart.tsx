@@ -39,7 +39,12 @@ export default function Chart({ feature, onHoverIndex }: ChartProps) {
           }}
           onMouseLeave={() => onHoverIndex && onHoverIndex(null)}
         >
-          <XAxis dataKey="idx" label={{ value: '点番号', position: 'insideBottomRight', offset: -5 }} />
+          <XAxis
+            dataKey="idx"
+            type="number"
+            domain={['dataMin', data.length > 0 ? data[data.length - 1].idx + 5 : 'dataMax']}
+            label={{ value: '点番号', position: 'insideBottomRight', offset: -5 }}
+          />
           <YAxis label={{ value: '高度(m)', angle: -90, position: 'insideLeft' }} />
           <Tooltip formatter={(v: number) => `${v} m`} />
           <Line type="monotone" dataKey="alt" stroke="#3b82f6" dot={false} />
