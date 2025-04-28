@@ -12,7 +12,7 @@ export default function App() {
     <div className="min-h-screen h-screen max-h-screen bg-gray-50 flex flex-col sm:flex-row overflow-hidden">
       {/* 左側メニュー（スマホでは上部、PCではサイド） */}
       <aside className="w-full sm:w-80 md:w-96 lg:w-[28rem] xl:w-[32rem] bg-white shadow-lg flex flex-col gap-6 p-4 overflow-y-auto">
-        <h1 className="text-2xl font-bold">GeoJSON Merge Tool</h1>
+        <h1 className="text-2xl font-bold">GeoJSON/GPX結合ツール</h1>
         <GeojsonUploader />
         <DownloadButton />
       </aside>
