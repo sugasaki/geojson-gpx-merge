@@ -1,69 +1,48 @@
 # geojson-gpx-merge
 
-GeoJSON/GPXファイルを結合し、地図上で可視化＆高度グラフ連携できるReactアプリです。
+This is a React application that allows you to merge GeoJSON and GPX files, visualize them on a map, and interact with an elevation graph.
 
-## 主な機能
+## Main Features
 
-- 複数のGeoJSONおよびGPXファイル（LineString/Polygon/トラック等）をアップロード＆結合
-- ファイル順をドラッグ＆ドロップで変更可能
-- 結合結果をMapTiler地図上に表示（APIキー対応）
-- 結合GeoJSONの高度（Z値）をグラフ化
-- グラフ上をホバーすると地図上に該当点のマーカー表示
-- GeoJSON/GPX両形式でダウンロード可能
-- ファイル削除・順序入替・ダウンロード機能
+- Upload and merge multiple GeoJSON and GPX files (LineString, Polygon, tracks, etc.)
+- Change the order of files via drag-and-drop
+- Display merged results on a MapTiler map (API key supported)
+- Visualize the elevation (Z value) of merged GeoJSON as a graph
+- Hovering over the graph displays a marker at the corresponding point on the map
+- Download merged data as GeoJSON or GPX
+- Delete files, reorder, and download functionality
 
-## 使い方
+## Usage
 
-1. このリポジトリをclone
-2. 依存インストール
+1. Clone this repository
+2. Install dependencies
    ```sh
    pnpm install
-   # または npm install
+   # or npm install
    ```
-3. MapTilerでAPIキーを取得し、`.env`ファイルに設定
+3. Obtain an API key from MapTiler and set it in a `.env` file
    ```env
-   VITE_MAPTILER_KEY=あなたのAPIキー
+   VITE_MAPTILER_KEY=your_api_key
    ```
-   - サンプル: `.env.sample` 参照
-4. 開発サーバ起動
+   - See `.env.sample` for an example
+4. Start the development server
    ```sh
    pnpm dev
-   # または npm run dev
+   # or npm run dev
    ```
-5. ブラウザで `http://localhost:5173` などにアクセス
+5. Access the app at `http://localhost:5173` in your browser
 
-## 技術スタック
+## Tech Stack
 - React
-- Zustand (状態管理)
-- MapLibre GL / @vis.gl/react-maplibre (地図表示)
-- MapTiler Streetsスタイル/APIキー
+- Zustand (state management)
+- MapLibre GL / @vis.gl/react-maplibre (map display)
+- MapTiler Streets style/API key
 - Tailwind CSS (UI)
-- recharts (グラフ)
+- recharts (graph)
 
-## ディレクトリ構成例
-```
-├── src
-│   ├── components
-│   │   ├── GeojsonUploader.tsx
-│   │   ├── MapView.tsx
-│   │   ├── Chart.tsx
-│   │   └── DownloadButton.tsx
-│   ├── utils
-│   │   ├── geojsonMerge.ts
-│   │   ├── geojsonBounds.ts
-│   │   └── geojsonToGpx.ts
-│   └── store
-│       └── geojsonStore.ts
-├── .env.sample
-├── .gitignore
-├── package.json
-├── README.md
-└── ...
+## Notes
+- Do not commit sensitive information such as API keys to `.env`. Use `.env.sample` as a reference.
+- Manage unnecessary files like `node_modules` with `.gitignore`.
 
-## 注意
-- `.env` にはAPIキー等の秘匿情報を記載し、**絶対にコミットしないでください**
-- `.env.sample` を参考にしてください
-- `node_modules` など不要なファイルは`.gitignore`で管理
-
-## ライセンス
+## License
 MIT
