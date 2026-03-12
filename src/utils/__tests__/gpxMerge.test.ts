@@ -133,4 +133,30 @@ describe('mergeGpxTexts', () => {
     const trksegMatches = result.match(/<trkseg>/g);
     expect(trksegMatches).toHaveLength(2);
   });
+
+  it('namespaceプレフィックスが衝突する場合エラーを投げる', () => {
+    const gpxA = `<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="A"
+     xmlns="http://www.topografix.com/GPX/1/1"
+     xmlns:ext="http://example.com/ext/v1">
+  <trk><trkseg><trkpt lat="35" lon="139"/></trkseg></trk>
+</gpx>`;
+    const gpxB = `<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="B"
+     xmlns="http://www.topografix.com/GPX/1/1"
+     xmlns:ext="http://example.com/ext/v2">
+  <trk><trkseg><trkpt lat="36" lon="140"/></trkseg></trk>
+</gpx>`;
+    expect(() => mergeGpxTexts([gpxA, gpxB])).toThrow('namespace prefix conflict');
+  });
+
+  it('creator属性のXML特殊文字がエスケープされる', () => {
+    const gpxSpecial = `<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="App &amp; Co"
+     xmlns="http://www.topografix.com/GPX/1/1">
+  <trk><trkseg><trkpt lat="35" lon="139"/></trkseg></trk>
+</gpx>`;
+    const result = mergeGpxTexts([gpxSpecial, gpx2]);
+    expect(result).toContain('creator="App &amp; Co"');
+  });
 });

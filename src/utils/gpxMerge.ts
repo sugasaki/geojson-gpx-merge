@@ -33,7 +33,15 @@ export function mergeGpxTexts(gpxTexts: string[]): string {
     for (let j = 0; j < gpxEl.attributes.length; j++) {
       const attr = gpxEl.attributes[j];
       if (attr.name.startsWith('xmlns:')) {
-        namespaces.set(attr.name, attr.value);
+        const existing = namespaces.get(attr.name);
+        if (existing && existing !== attr.value) {
+          throw new Error(
+            `GPX namespace prefix conflict for "${attr.name}": "${existing}" vs "${attr.value}"`
+          );
+        }
+        if (!existing) {
+          namespaces.set(attr.name, attr.value);
+        }
       } else if (attr.name !== 'version' && attr.name !== 'creator' && attr.name !== 'xmlns') {
         // version, creator, xmlnsは別途出力するため除外
         // 最初のファイルの属性を優先（上書きしない）
@@ -85,12 +93,12 @@ export function mergeGpxTexts(gpxTexts: string[]): string {
 
   // GPXドキュメントを構築
   let gpx = `<?xml version="1.0" encoding="UTF-8"?>\n`;
-  gpx += `<gpx version="1.1" creator="${creator}"\n`;
+  gpx += `<gpx version="1.1" creator="${escapeXmlAttr(creator)}"\n`;
   gpx += `     xmlns="http://www.topografix.com/GPX/1/1"`;
   if (nsDecls) gpx += `\n     ${nsDecls}`;
   // その他のルート属性（xsi:schemaLocation等）
   for (const [name, value] of rootAttrs) {
-    gpx += `\n     ${name}="${value}"`;
+    gpx += `\n     ${name}="${escapeXmlAttr(value)}"`;
   }
   gpx += `>\n`;
 
@@ -106,6 +114,17 @@ export function mergeGpxTexts(gpxTexts: string[]): string {
 
   gpx += `</gpx>\n`;
   return gpx;
+}
+
+/**
+ * XML属性値をエスケープする
+ */
+function escapeXmlAttr(value: string): string {
+  return value
+    .replaceAll('&', '&amp;')
+    .replaceAll('"', '&quot;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;');
 }
 
 /**
