@@ -8,9 +8,9 @@ export function mergeGpxTexts(gpxTexts: string[]): string {
 
   const parser = new DOMParser();
 
-  // 全GPXからnamespace宣言、trk, rte, wpt要素を収集
+  // 全GPXからnamespace宣言、trkseg, rte, wpt要素を収集
   const namespaces = new Map<string, string>();
-  const trkElements: string[] = [];
+  const trksegElements: string[] = [];
   const rteElements: string[] = [];
   const wptElements: string[] = [];
   const metadataElements: string[] = [];
@@ -43,15 +43,22 @@ export function mergeGpxTexts(gpxTexts: string[]): string {
       }
     }
 
-    // trk, rte, wpt要素を収集（直接の子要素のみ）
+    // trk内のtrkseg, rte, wpt要素を収集（直接の子要素のみ）
     for (const child of Array.from(gpxEl.childNodes)) {
       if (child.nodeType !== 1) continue;
       const el = child as Element;
       const tag = el.tagName;
-      const str = nodeToString(el, gpxEl);
-      if (tag === 'trk') trkElements.push(str);
-      else if (tag === 'rte') rteElements.push(str);
-      else if (tag === 'wpt') wptElements.push(str);
+      if (tag === 'trk') {
+        // trk内のtrkseg要素を個別に収集
+        const trksegs = el.getElementsByTagName('trkseg');
+        for (let j = 0; j < trksegs.length; j++) {
+          trksegElements.push(nodeToString(trksegs[j], gpxEl));
+        }
+      } else if (tag === 'rte') {
+        rteElements.push(nodeToString(el, gpxEl));
+      } else if (tag === 'wpt') {
+        wptElements.push(nodeToString(el, gpxEl));
+      }
     }
   }
 
@@ -70,7 +77,11 @@ export function mergeGpxTexts(gpxTexts: string[]): string {
   for (const m of metadataElements) gpx += `  ${m}\n`;
   for (const w of wptElements) gpx += `  ${w}\n`;
   for (const r of rteElements) gpx += `  ${r}\n`;
-  for (const t of trkElements) gpx += `  ${t}\n`;
+  if (trksegElements.length > 0) {
+    gpx += `  <trk>\n`;
+    for (const ts of trksegElements) gpx += `    ${ts}\n`;
+    gpx += `  </trk>\n`;
+  }
 
   gpx += `</gpx>\n`;
   return gpx;
