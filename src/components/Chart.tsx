@@ -1,5 +1,6 @@
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import { GeoJSON, GeoJSONFeature } from '@/store/geojsonStore';
+import { GeoJSON } from '@/store/geojsonStore';
+import { extractLineCoords } from '@/utils/extractLineCoords';
 
 function haversine(lat1: number, lon1: number, lat2: number, lon2: number): number {
   const R = 6371000; // 地球半径[m]
@@ -12,18 +13,6 @@ function haversine(lat1: number, lon1: number, lat2: number, lon2: number): numb
     Math.sin(dLon / 2) * Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
-}
-
-function extractLineCoords(features: GeoJSONFeature[]): number[][] {
-  const coords: number[][] = [];
-  for (const f of features) {
-    if (f.geometry.type === 'LineString') {
-      coords.push(...f.geometry.coordinates);
-    } else if (f.geometry.type === 'MultiLineString') {
-      coords.push(...f.geometry.coordinates.flat());
-    }
-  }
-  return coords;
 }
 
 type ChartProps = {

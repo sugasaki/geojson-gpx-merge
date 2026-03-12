@@ -1,7 +1,8 @@
 import { useMemo, useRef, useEffect } from 'react';
 import Map, { Source, Layer, ViewState, MapRef } from '@vis.gl/react-maplibre';
-import { useGeojsonStore, GeoJSONFeature } from '@/store/geojsonStore';
+import { useGeojsonStore } from '@/store/geojsonStore';
 import { getGeojsonBounds } from '@/utils/geojsonBounds';
+import { extractLineCoords } from '@/utils/extractLineCoords';
 
 // MapTiler Streets スタイル
 const MAP_STYLE = `https://api.maptiler.com/maps/streets/style.json?key=${import.meta.env.VITE_MAPTILER_KEY}`;
@@ -14,7 +15,7 @@ const INITIAL_VIEW_STATE: Partial<ViewState> = {
 const lineLayer = {
   id: 'merged-line',
   type: 'line' as const,
-  filter: ['in', ['get', '_geomType'], ['literal', ['LineString', 'MultiLineString']]] as any,
+  filter: ['in', ['geometry-type'], ['literal', ['LineString', 'MultiLineString']]] as any,
   paint: {
     'line-color': '#ef4444',
     'line-width': 4,
@@ -24,7 +25,7 @@ const lineLayer = {
 const fillLayer = {
   id: 'merged-fill',
   type: 'fill' as const,
-  filter: ['in', ['get', '_geomType'], ['literal', ['Polygon', 'MultiPolygon']]] as any,
+  filter: ['in', ['geometry-type'], ['literal', ['Polygon', 'MultiPolygon']]] as any,
   paint: {
     'fill-color': '#3b82f6',
     'fill-opacity': 0.4,
@@ -34,7 +35,7 @@ const fillLayer = {
 const pointLayer = {
   id: 'merged-point',
   type: 'circle' as const,
-  filter: ['in', ['get', '_geomType'], ['literal', ['Point', 'MultiPoint']]] as any,
+  filter: ['in', ['geometry-type'], ['literal', ['Point', 'MultiPoint']]] as any,
   paint: {
     'circle-radius': 6,
     'circle-color': '#f59e0b',
@@ -46,7 +47,7 @@ const pointLayer = {
 const pointLabelLayer = {
   id: 'merged-point-label',
   type: 'symbol' as const,
-  filter: ['in', ['get', '_geomType'], ['literal', ['Point', 'MultiPoint']]] as any,
+  filter: ['in', ['geometry-type'], ['literal', ['Point', 'MultiPoint']]] as any,
   layout: {
     'text-field': ['get', 'name'] as any,
     'text-size': 12,
@@ -72,37 +73,12 @@ const hoverMarkerLayer = {
   },
 };
 
-function extractLineCoords(features: GeoJSONFeature[]): number[][] {
-  const coords: number[][] = [];
-  for (const f of features) {
-    if (f.geometry.type === 'LineString') {
-      coords.push(...f.geometry.coordinates);
-    } else if (f.geometry.type === 'MultiLineString') {
-      coords.push(...f.geometry.coordinates.flat());
-    }
-  }
-  return coords;
-}
-
 interface MapViewProps {
   hoveredIndex?: number | null;
 }
 
 export default function MapView({ hoveredIndex }: MapViewProps) {
   const mergedGeojson = useGeojsonStore((s) => s.mergedGeojson);
-
-  // _geomType プロパティを付与してフィルタリング可能にする
-  const geojsonData = useMemo(() => {
-    if (!mergedGeojson) return null;
-    return {
-      type: 'FeatureCollection' as const,
-      features: mergedGeojson.features.map((f) => ({
-        ...f,
-        properties: { ...f.properties, _geomType: f.geometry.type },
-      })),
-    };
-  }, [mergedGeojson]);
-
   const mapRef = useRef<MapRef>(null);
 
   // GeoJSON領域でバウンド
@@ -145,8 +121,8 @@ export default function MapView({ hoveredIndex }: MapViewProps) {
         initialViewState={INITIAL_VIEW_STATE}
         style={{ width: '100%', height: '100%' }}
       >
-        {geojsonData && (
-          <Source id="merged" type="geojson" data={geojsonData}>
+        {mergedGeojson && (
+          <Source id="merged" type="geojson" data={mergedGeojson as any}>
             <Layer {...lineLayer} />
             <Layer {...fillLayer} />
             <Layer {...pointLayer} />

@@ -26,8 +26,8 @@ function featureToWpts(feature: GeoJSONFeature): string[] {
   const type = feature.properties?.type;
   let wpt = `<wpt lat="${lat}" lon="${lon}">`;
   if (typeof ele === 'number') wpt += `\n  <ele>${ele}</ele>`;
-  if (name) wpt += `\n  <name>${escapeXml(name)}</name>`;
-  if (type) wpt += `\n  <type>${escapeXml(type)}</type>`;
+  if (typeof name === 'string' && name) wpt += `\n  <name>${escapeXml(name)}</name>`;
+  if (typeof type === 'string' && type) wpt += `\n  <type>${escapeXml(type)}</type>`;
   wpt += `\n</wpt>`;
   return [wpt];
 }
@@ -41,11 +41,22 @@ function escapeXml(str: string): string {
     .replace(/'/g, '&apos;');
 }
 
-export function geojsonToGpx(fc: GeoJSON): string {
+const SUPPORTED_GPX_TYPES = new Set(['LineString', 'MultiLineString', 'Point']);
+
+export type GpxExportResult = {
+  gpx: string;
+  skippedTypes: string[];
+};
+
+export function geojsonToGpx(fc: GeoJSON): GpxExportResult {
   const trksegs: string[] = [];
   const wpts: string[] = [];
+  const skippedTypes = new Set<string>();
 
   for (const feature of fc.features) {
+    if (!SUPPORTED_GPX_TYPES.has(feature.geometry.type)) {
+      skippedTypes.add(feature.geometry.type);
+    }
     trksegs.push(...featureToTrksegs(feature));
     wpts.push(...featureToWpts(feature));
   }
@@ -57,8 +68,9 @@ export function geojsonToGpx(fc: GeoJSON): string {
   body += wpts.join('\n');
   if (wpts.length > 0) body += '\n';
 
-  return `<?xml version="1.0" encoding="UTF-8"?>\n` +
+  const gpx = `<?xml version="1.0" encoding="UTF-8"?>\n` +
     `<gpx version="1.1" creator="gpx-merge" xmlns="http://www.topografix.com/GPX/1/1">\n` +
     body +
     `</gpx>\n`;
+  return { gpx, skippedTypes: [...skippedTypes] };
 }
