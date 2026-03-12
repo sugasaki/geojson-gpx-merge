@@ -11,7 +11,7 @@
 - マージデータのGeoJSON/GPXダウンロード
 
 ## Tech Stack
-- React 18 + TypeScript + Vite 4
+- React 18 + TypeScript + Vite 6
 - Zustand 4 (状態管理)
 - maplibre-gl 3.x + @vis.gl/react-maplibre 8.x
 - MapTiler Streets スタイル (APIキー必要)
@@ -77,8 +77,8 @@
   2. 対応済みのレビュースレッドをResolveする（GraphQL API `resolveReviewThread` を使用）
 
 ### ビルド・テスト確認
-- 実装後は必ず `npm run build` でエラーがないことを確認する
-- `npm run test` でユニットテストが通ることを確認する
+- 実装後は必ず `pnpm build` でエラーがないことを確認する
+- `pnpm test` でユニットテストが通ることを確認する
 - テスト: vitest + jsdom (`src/utils/__tests__/`)
 
 ### CLIツールの注意点
