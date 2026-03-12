@@ -76,8 +76,10 @@
   1. PRコメント欄に対応内容のサマリーを投稿する
   2. 対応済みのレビュースレッドをResolveする（GraphQL API `resolveReviewThread` を使用）
 
-### ビルド確認
+### ビルド・テスト確認
 - 実装後は必ず `npm run build` でエラーがないことを確認する
+- `npm run test` でユニットテストが通ることを確認する
+- テスト: vitest + jsdom (`src/utils/__tests__/`)
 
 ### CLIツールの注意点
 - `gh pr checks` はチェック失敗時に終了コード1を返す
