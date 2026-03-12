@@ -68,10 +68,10 @@
 - `gh pr create` で作成
 - **Issue がある場合**: body に `Closes #{issue番号}` を **必ず** 含める
 - **Issue がない場合**: body の Summary で変更理由を明記する
-- **PR作成後は必ず GitHub Copilot のレビューをリクエストする**: `gh pr edit --add-reviewer copilot`
 - **PRのマージはユーザーの明示的な承認なしに実行しない**
 
 ### レビュー対応
+- **PRにはGitHub Copilotの自動レビューが入る**（Rulesetで設定済み）
 - レビュー指摘への修正をpushした後は、**必ず以下の2つを行う**:
   1. PRコメント欄に対応内容のサマリーを投稿する
   2. 対応済みのレビュースレッドをResolveする（GraphQL API `resolveReviewThread` を使用）
