@@ -79,6 +79,36 @@ describe('mergeGpxTexts', () => {
     expect(secondDecl).toBe(-1);
   });
 
+  it('最初のtrkのメタデータ（name等）が保持される', () => {
+    const gpxWithTrkMeta = `<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="Test"
+     xmlns="http://www.topografix.com/GPX/1/1">
+  <trk>
+    <name>Track1</name>
+    <type>hiking</type>
+    <trkseg>
+      <trkpt lat="35.0" lon="139.0"><ele>100</ele></trkpt>
+    </trkseg>
+  </trk>
+</gpx>`;
+    const gpxWithTrkMeta2 = `<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="Test2"
+     xmlns="http://www.topografix.com/GPX/1/1">
+  <trk>
+    <name>Track2</name>
+    <trkseg>
+      <trkpt lat="36.0" lon="140.0"><ele>200</ele></trkpt>
+    </trkseg>
+  </trk>
+</gpx>`;
+    const result = mergeGpxTexts([gpxWithTrkMeta, gpxWithTrkMeta2]);
+    // 最初のtrkのメタデータが保持される
+    expect(result).toContain('Track1');
+    expect(result).toContain('hiking');
+    // 2番目のtrkのメタデータは含まれない
+    expect(result).not.toContain('Track2');
+  });
+
   it('全ファイルのtrksegが1つのtrkにまとめられる', () => {
     const result = mergeGpxTexts([gpx1, gpx2]);
     const trkMatches = result.match(/<trk>/g);

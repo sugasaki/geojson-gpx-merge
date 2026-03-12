@@ -8,15 +8,16 @@ export function mergeGpxTexts(gpxTexts: string[]): string {
 
   const parser = new DOMParser();
 
-  // 全GPXからnamespace宣言、trk, rte, wpt要素を収集
   const namespaces = new Map<string, string>();
+  // 最初のtrkのメタデータ（trkseg以外の子要素）
+  const trkMetaElements: string[] = [];
   const trksegElements: string[] = [];
   const rteElements: string[] = [];
   const wptElements: string[] = [];
   const metadataElements: string[] = [];
 
-  // 最初のGPXのcreator属性を使用
   let creator = 'gpx-merge';
+  let trkMetaCaptured = false;
 
   for (let i = 0; i < gpxTexts.length; i++) {
     const doc = parser.parseFromString(gpxTexts[i], 'application/xml');
@@ -43,16 +44,24 @@ export function mergeGpxTexts(gpxTexts: string[]): string {
       }
     }
 
-    // trk内のtrkseg, rte, wpt要素を収集（直接の子要素のみ）
+    // gpx直下の子要素を走査
     for (const child of Array.from(gpxEl.childNodes)) {
       if (child.nodeType !== 1) continue;
       const el = child as Element;
       const tag = el.tagName;
       if (tag === 'trk') {
-        const trksegs = el.getElementsByTagName('trkseg');
-        for (let j = 0; j < trksegs.length; j++) {
-          trksegElements.push(nodeToString(trksegs[j], gpxEl));
+        // trk直下の子ノードを走査
+        for (const trkChild of Array.from(el.childNodes)) {
+          if (trkChild.nodeType !== 1) continue;
+          const trkChildEl = trkChild as Element;
+          if (trkChildEl.tagName === 'trkseg') {
+            trksegElements.push(nodeToString(trkChildEl, gpxEl));
+          } else if (!trkMetaCaptured) {
+            // 最初のtrkのメタデータ要素を保持
+            trkMetaElements.push(nodeToString(trkChildEl, gpxEl));
+          }
         }
+        if (!trkMetaCaptured) trkMetaCaptured = true;
       } else if (tag === 'rte') {
         rteElements.push(nodeToString(el, gpxEl));
       } else if (tag === 'wpt') {
@@ -76,8 +85,9 @@ export function mergeGpxTexts(gpxTexts: string[]): string {
   for (const m of metadataElements) gpx += `  ${m}\n`;
   for (const w of wptElements) gpx += `  ${w}\n`;
   for (const r of rteElements) gpx += `  ${r}\n`;
-  if (trksegElements.length > 0) {
+  if (trksegElements.length > 0 || trkMetaElements.length > 0) {
     gpx += `  <trk>\n`;
+    for (const meta of trkMetaElements) gpx += `    ${meta}\n`;
     for (const ts of trksegElements) gpx += `    ${ts}\n`;
     gpx += `  </trk>\n`;
   }
