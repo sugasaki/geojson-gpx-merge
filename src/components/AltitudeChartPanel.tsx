@@ -1,12 +1,12 @@
 import Chart from '@/components/Chart';
-import { GeoJSONFeature } from '@/store/geojsonStore';
+import { GeoJSON } from '@/store/geojsonStore';
 
 interface AltitudeChartPanelProps {
-  feature: GeoJSONFeature | null;
+  fc: GeoJSON | null;
   onHoverIndex?: (idx: number | null) => void;
 }
 
-export default function AltitudeChartPanel({ feature, onHoverIndex }: AltitudeChartPanelProps) {
+export default function AltitudeChartPanel({ fc, onHoverIndex }: AltitudeChartPanelProps) {
   return (
     <div className="bg-white shadow-lg p-2 md:p-4 border-t w-full max-w-none sm:max-w-3xl md:max-w-4xl lg:max-w-6xl xl:max-w-7xl mx-auto">
       <div className="text-base md:text-lg font-semibold text-gray-700 mb-2 flex items-center gap-2">
@@ -28,7 +28,7 @@ export default function AltitudeChartPanel({ feature, onHoverIndex }: AltitudeCh
         高度グラフ
         <span className="text-xs text-gray-400 ml-2">(標高プロファイル)</span>
       </div>
-      <Chart feature={feature} onHoverIndex={onHoverIndex} />
+      <Chart fc={fc} onHoverIndex={onHoverIndex} />
     </div>
   );
 }

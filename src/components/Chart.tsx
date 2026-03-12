@@ -1,6 +1,5 @@
-import React from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import { GeoJSONFeature } from '@/store/geojsonStore';
+import { GeoJSON, GeoJSONFeature } from '@/store/geojsonStore';
 
 function haversine(lat1: number, lon1: number, lat2: number, lon2: number): number {
   const R = 6371000; // 地球半径[m]
@@ -15,17 +14,27 @@ function haversine(lat1: number, lon1: number, lat2: number, lon2: number): numb
   return R * c;
 }
 
-// coordinates: [lng, lat, alt?]
+function extractLineCoords(features: GeoJSONFeature[]): number[][] {
+  const coords: number[][] = [];
+  for (const f of features) {
+    if (f.geometry.type === 'LineString') {
+      coords.push(...f.geometry.coordinates);
+    } else if (f.geometry.type === 'MultiLineString') {
+      coords.push(...f.geometry.coordinates.flat());
+    }
+  }
+  return coords;
+}
+
 type ChartProps = {
-  feature: GeoJSONFeature | null;
+  fc: GeoJSON | null;
   onHoverIndex?: (idx: number | null) => void;
 };
 
-export default function Chart({ feature, onHoverIndex }: ChartProps) {
-  // 標高データと累積距離を抽出
+export default function Chart({ fc, onHoverIndex }: ChartProps) {
   let data: { idx: number; alt: number; distance: number }[] = [];
-  if (feature && feature.geometry.type === 'LineString') {
-    const coords = feature.geometry.coordinates;
+  if (fc) {
+    const coords = extractLineCoords(fc.features);
     let sum = 0;
     data = coords.map((c: any, i: number) => {
       let d = 0;
@@ -36,22 +45,7 @@ export default function Chart({ feature, onHoverIndex }: ChartProps) {
       return {
         idx: i,
         alt: typeof c[2] === 'number' ? c[2] : 0,
-        distance: +(sum / 1000).toFixed(3) // km単位, 小数3桁
-      };
-    });
-  } else if (feature && feature.geometry.type === 'MultiLineString') {
-    const coords = feature.geometry.coordinates.flat();
-    let sum = 0;
-    data = coords.map((c: any, i: number) => {
-      let d = 0;
-      if (i > 0) {
-        d = haversine(coords[i-1][1], coords[i-1][0], c[1], c[0]);
-      }
-      sum += d;
-      return {
-        idx: i,
-        alt: typeof c[2] === 'number' ? c[2] : 0,
-        distance: +(sum / 1000).toFixed(3) // km単位, 小数3桁
+        distance: +(sum / 1000).toFixed(3),
       };
     });
   }

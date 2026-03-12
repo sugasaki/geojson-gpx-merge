@@ -15,11 +15,11 @@ export type GeoJSON = {
 };
 
 interface GeojsonState {
-  mergedGeojson: GeoJSONFeature | null;
-  setMergedGeojson: (feature: GeoJSONFeature | null) => void;
+  mergedGeojson: GeoJSON | null;
+  setMergedGeojson: (fc: GeoJSON | null) => void;
 }
 
 export const useGeojsonStore = create<GeojsonState>((set) => ({
   mergedGeojson: null,
-  setMergedGeojson: (feature) => set({ mergedGeojson: feature }),
+  setMergedGeojson: (fc) => set({ mergedGeojson: fc }),
 }));

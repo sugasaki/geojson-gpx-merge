@@ -45,7 +45,7 @@ export default function ResizableMapAndChart({
       </div>
       {/* 高度グラフ領域 */}
       <div style={{ flexBasis: `${(1 - mapHeightRatio) * 100}%`, minHeight: 0, width: '100%' }}>
-        <AltitudeChartPanel feature={mergedGeojson} onHoverIndex={setHoveredIndex} />
+        <AltitudeChartPanel fc={mergedGeojson} onHoverIndex={setHoveredIndex} />
       </div>
       {/* ドラッグ操作イベントをbodyにバインド */}
       {dragging && (
