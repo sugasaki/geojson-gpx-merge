@@ -17,9 +17,13 @@ export type GeoJSON = {
 interface GeojsonState {
   mergedGeojson: GeoJSON | null;
   setMergedGeojson: (fc: GeoJSON | null) => void;
+  rawGpxTexts: string[];
+  setRawGpxTexts: (texts: string[]) => void;
 }
 
 export const useGeojsonStore = create<GeojsonState>((set) => ({
   mergedGeojson: null,
   setMergedGeojson: (fc) => set({ mergedGeojson: fc }),
+  rawGpxTexts: [],
+  setRawGpxTexts: (texts) => set({ rawGpxTexts: texts }),
 }));

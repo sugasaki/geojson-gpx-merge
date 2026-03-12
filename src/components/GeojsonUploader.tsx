@@ -8,6 +8,8 @@ type FileItem = {
   file: File;
   name: string;
   geojson: GeoJSON;
+  rawText: string;
+  isGpx: boolean;
 };
 
 // アップロード用アイコンSVG
@@ -20,9 +22,15 @@ const UploadIcon = () => (
 
 export default function GeojsonUploader() {
   const setMergedGeojson = useGeojsonStore((s) => s.setMergedGeojson);
+  const setRawGpxTexts = useGeojsonStore((s) => s.setRawGpxTexts);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dragActive, setDragActive] = useState(false);
   const [fileItems, setFileItems] = useState<FileItem[]>([]);
+
+  const updateStore = (items: FileItem[]) => {
+    setMergedGeojson(mergeGeojsons(items.map(f => f.geojson)));
+    setRawGpxTexts(items.filter(f => f.isGpx).map(f => f.rawText));
+  };
 
   // ファイル追加
   const handleFilesProcess = async (files: FileList | null) => {
@@ -30,23 +38,25 @@ export default function GeojsonUploader() {
     const newItems: FileItem[] = [];
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
-      const geojson = await fileToGeojson(file);
+      const rawText = await file.text();
+      const isGpx = file.name.toLowerCase().endsWith('.gpx') || file.type === 'application/gpx+xml';
+      const geojson = await fileToGeojson(file, rawText);
       if (geojson) {
-        newItems.push({ file, name: file.name, geojson });
-      } else if (file.name.toLowerCase().endsWith('.gpx')) {
+        newItems.push({ file, name: file.name, geojson, rawText, isGpx });
+      } else if (isGpx) {
         alert('GPXファイルの読み込みに失敗しました: ' + file.name);
       }
     }
     const mergedList = [...fileItems, ...newItems];
     setFileItems(mergedList);
-    setMergedGeojson(mergeGeojsons(mergedList.map(f => f.geojson)));
+    updateStore(mergedList);
   };
 
   // ファイル削除
   const removeItem = (idx: number) => {
     const updated = fileItems.filter((_, i) => i !== idx);
     setFileItems(updated);
-    setMergedGeojson(mergeGeojsons(updated.map(f => f.geojson)));
+    updateStore(updated);
   };
 
   // input change
@@ -81,6 +91,7 @@ export default function GeojsonUploader() {
   const clearAll = () => {
     setFileItems([]);
     setMergedGeojson(null);
+    setRawGpxTexts([]);
   };
 
   // 並び替え（DnD）
@@ -90,7 +101,7 @@ export default function GeojsonUploader() {
     const [removed] = updated.splice(result.source.index, 1);
     updated.splice(result.destination.index, 0, removed);
     setFileItems(updated);
-    setMergedGeojson(mergeGeojsons(updated.map(f => f.geojson)));
+    updateStore(updated);
   };
 
   return (

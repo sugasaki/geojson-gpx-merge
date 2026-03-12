@@ -28,6 +28,10 @@ function featureToWpts(feature: GeoJSONFeature): string[] {
   if (typeof ele === 'number') wpt += `\n  <ele>${ele}</ele>`;
   if (typeof name === 'string' && name) wpt += `\n  <name>${escapeXml(name)}</name>`;
   if (typeof type === 'string' && type) wpt += `\n  <type>${escapeXml(type)}</type>`;
+  const extensionsXml = feature.properties?._extensionsXml;
+  if (typeof extensionsXml === 'string' && extensionsXml) {
+    wpt += `\n  <extensions>\n    ${extensionsXml}\n  </extensions>`;
+  }
   wpt += `\n</wpt>`;
   return [wpt];
 }
@@ -69,7 +73,9 @@ export function geojsonToGpx(fc: GeoJSON): GpxExportResult {
   if (wpts.length > 0) body += '\n';
 
   const gpx = `<?xml version="1.0" encoding="UTF-8"?>\n` +
-    `<gpx version="1.1" creator="gpx-merge" xmlns="http://www.topografix.com/GPX/1/1">\n` +
+    `<gpx version="1.1" creator="gpx-merge"\n` +
+    `     xmlns="http://www.topografix.com/GPX/1/1"\n` +
+    `     xmlns:gpxx="http://www.garmin.com/xmlschemas/GpxExtensions/v3">\n` +
     body +
     `</gpx>\n`;
   return { gpx, skippedTypes: [...skippedTypes] };
