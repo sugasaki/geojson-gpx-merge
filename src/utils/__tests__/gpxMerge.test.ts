@@ -109,6 +109,23 @@ describe('mergeGpxTexts', () => {
     expect(result).not.toContain('Track2');
   });
 
+  it('ルート要素のその他属性（xsi:schemaLocation等）が保持される', () => {
+    const gpxWithSchema = `<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="Test"
+     xmlns="http://www.topografix.com/GPX/1/1"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
+  <trk>
+    <trkseg>
+      <trkpt lat="35.0" lon="139.0"><ele>100</ele></trkpt>
+    </trkseg>
+  </trk>
+</gpx>`;
+    const result = mergeGpxTexts([gpxWithSchema, gpx2]);
+    expect(result).toContain('xsi:schemaLocation=');
+    expect(result).toContain('xmlns:xsi=');
+  });
+
   it('全ファイルのtrksegが1つのtrkにまとめられる', () => {
     const result = mergeGpxTexts([gpx1, gpx2]);
     const trkMatches = result.match(/<trk>/g);

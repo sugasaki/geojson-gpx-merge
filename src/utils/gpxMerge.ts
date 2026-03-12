@@ -9,6 +9,8 @@ export function mergeGpxTexts(gpxTexts: string[]): string {
   const parser = new DOMParser();
 
   const namespaces = new Map<string, string>();
+  // ルート要素のその他属性（xsi:schemaLocation等）を保持
+  const rootAttrs = new Map<string, string>();
   // 最初のtrkのメタデータ（trkseg以外の子要素）
   const trkMetaElements: string[] = [];
   const trksegElements: string[] = [];
@@ -27,11 +29,17 @@ export function mergeGpxTexts(gpxTexts: string[]): string {
       creator = gpxEl.getAttribute('creator')!;
     }
 
-    // namespace宣言を収集
+    // ルート属性を収集
     for (let j = 0; j < gpxEl.attributes.length; j++) {
       const attr = gpxEl.attributes[j];
       if (attr.name.startsWith('xmlns:')) {
         namespaces.set(attr.name, attr.value);
+      } else if (attr.name !== 'version' && attr.name !== 'creator' && attr.name !== 'xmlns') {
+        // version, creator, xmlnsは別途出力するため除外
+        // 最初のファイルの属性を優先（上書きしない）
+        if (!rootAttrs.has(attr.name)) {
+          rootAttrs.set(attr.name, attr.value);
+        }
       }
     }
 
@@ -80,6 +88,10 @@ export function mergeGpxTexts(gpxTexts: string[]): string {
   gpx += `<gpx version="1.1" creator="${creator}"\n`;
   gpx += `     xmlns="http://www.topografix.com/GPX/1/1"`;
   if (nsDecls) gpx += `\n     ${nsDecls}`;
+  // その他のルート属性（xsi:schemaLocation等）
+  for (const [name, value] of rootAttrs) {
+    gpx += `\n     ${name}="${value}"`;
+  }
   gpx += `>\n`;
 
   for (const m of metadataElements) gpx += `  ${m}\n`;
