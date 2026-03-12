@@ -19,3 +19,6 @@ pnpm-debug.log*
 .vscode/
 .idea/
 .DS_Store
+
+# Claude Code worktrees
+.claude/worktrees/
