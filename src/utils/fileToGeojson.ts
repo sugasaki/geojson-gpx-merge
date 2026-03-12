@@ -1,8 +1,8 @@
 import { gpxToGeojson } from '@/utils/gpxToGeojson';
 import { FeatureCollection } from 'geojson';
 
-export async function fileToGeojson(file: File): Promise<FeatureCollection | null> {
-  const text = await file.text();
+export async function fileToGeojson(file: File, rawText?: string): Promise<FeatureCollection | null> {
+  const text = rawText ?? await file.text();
   let json = null;
   if (file.name.toLowerCase().endsWith('.gpx') || file.type === 'application/gpx+xml') {
     json = await gpxToGeojson(text);
